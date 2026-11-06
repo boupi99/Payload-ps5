@@ -1,0 +1,23 @@
+name: PS5 Payload Builder
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Clang Compiler installieren
+        run: sudo apt-get update && sudo apt-get install -y clang llvm
+
+      - name: Payload kompilieren
+        run: |
+          clang -target x86_64-unknown-freebsd -ffreestanding -fno-pie -nostdlib -O2 -nostdlib -e payload_entry Nutzlast.c -o payload.elf
+
+      - name: ELF-Datei als Artefakt speichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: payload-elf
+          path: payload.elf
